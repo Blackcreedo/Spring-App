@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = { "http://localhost:3000" }, maxAge = 3600)
-@RequestMapping("/api/windows")
+@RequestMapping("/api/heaters")
 @Transactional
 public class HeaterController {
     private final HeaterDao heaterDao;

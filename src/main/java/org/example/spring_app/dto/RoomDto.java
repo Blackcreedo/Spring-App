@@ -16,8 +16,9 @@ public class RoomDto {
     private Long buildingId;
     private Double current_temperature;
     private Double target_temperature;
-    private Set<Long> heaterIds;
     private Set<Long> windowIds;
+    private Set<Long> heaterIds;
+
 
     public RoomDto() {
     }
@@ -30,10 +31,10 @@ public class RoomDto {
         this.buildingId = room.getBuilding().getId();
         this.current_temperature = room.getCurrent_temperature();
         this.target_temperature = room.getTarget_temperature();
-        this.heaterIds = new HashSet<Long>();
-        if(room.getHeaters() != null ) room.getHeaters().forEach((heater) -> heaterIds.add(heater.getId()));
         this.windowIds = new HashSet<Long>();
         if(room.getWindows() != null ) room.getWindows().forEach((window)-> windowIds.add(window.getId()));
+        this.heaterIds = new HashSet<Long>();
+        if(room.getHeaters() != null ) room.getHeaters().forEach((heater) -> heaterIds.add(heater.getId()));
     }
 
     public Long getId() {
@@ -100,11 +101,11 @@ public class RoomDto {
         this.target_temperature = target_temperature;
     }
 
-    public void setHeaterIds(Set<Long> heaterIds) {
-        this.heaterIds = heaterIds;
-    }
-
     public void setWindowIds(Set<Long> windowIds) {
         this.windowIds = windowIds;
+    }
+
+    public void setHeaterIds(Set<Long> heaterIds) {
+        this.heaterIds = heaterIds;
     }
 }

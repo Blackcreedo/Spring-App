@@ -26,37 +26,34 @@ class WindowDaoTest {
     private RoomDao roomDao;
 
     @Test
-    public void shouldFindAWindow() {
-        Window window = windowDao.getReferenceById(-10L);
+    public void findWindow() {
+        Window window = windowDao.getReferenceById(1L);
         Assertions.assertThat(window.getName()).isEqualTo("Window 1");
         Assertions.assertThat(window.getWindowStatus()).isEqualTo(WindowStatus.CLOSED);
     }
 
     @Test
-    public void shouldFindRoomOpenWindows() {
-        List<Window> result = windowDao.findRoomOpenWindows(-9L);
-        Assertions.assertThat(result)
-                .hasSize(1)
-                .extracting("id", "windowStatus")
-                .containsExactly(Tuple.tuple(-8L, WindowStatus.OPEN));
-    }
-
-    @Test
-    public void shouldNotFindRoomOpenWindows() {
-        List<Window> result = windowDao.findRoomOpenWindows(-10L);
-        Assertions.assertThat(result).isEmpty();
-    }
-
-    @Test
-    public void shouldDeleteWindowsRoom() {
-        Room room = roomDao.getReferenceById(-10L);
+    public void deleteWindowsRoom() {
+        Room room = roomDao.getReferenceById(1L);
         Set<Window> windows = room.getWindows();
         List<Long> windowIds = windows.stream().map(w -> w.getId()).collect(Collectors.toList());
         Assertions.assertThat(windowIds.size()).isEqualTo(2);
 
-        windowDao.deleteByRoom(-10L);
+        windowDao.deleteByRoom(1L);
+
         List<Window> result = windowDao.findAllById(windowIds);
         Assertions.assertThat(result).isEmpty();
+    }
 
+    @Test
+    public void findRoomOpenWindows() {
+        List<Window> result = windowDao.findRoomOpenWindows(2L);
+        Assertions.assertThat(result).hasSize(1).extracting("id", "windowStatus").containsExactly(Tuple.tuple(4L, WindowStatus.OPEN));
+    }
+
+    @Test
+    public void notFindRoomOpenWindows() {
+        List<Window> result = windowDao.findRoomOpenWindows(1L);
+        Assertions.assertThat(result).isEmpty();
     }
 }

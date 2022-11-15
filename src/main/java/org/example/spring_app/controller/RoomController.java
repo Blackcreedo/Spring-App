@@ -42,7 +42,7 @@ public class RoomController {
         Building building = buildingDao.getReferenceById(dto.getBuildingId());
         Room room = null;
         if(dto.getId() == null){
-            room = roomDao.save(new Room(dto.getName(), dto.getId(), building));
+            room = roomDao.save(new Room(dto.getName(), dto.getId(), dto.getFloor(), building));
         }
         else{
             room = roomDao.getReferenceById(dto.getId());

@@ -38,94 +38,50 @@ public class HeaterControllerTest {
     @MockBean
     private RoomDao roomDao;
 
+
+
     @Test
-    void shouldLoadHeaters() throws Exception {
+    void loadHeater() throws Exception {
         given(heaterDao.findAll()).willReturn(List.of(
                 createHeater("heater 1"),
                 createHeater("heater 2")
         ));
-
-        mockMvc.perform(get("/api/heaters").accept(APPLICATION_JSON))
-                // check the HTTP response
-                .andExpect(status().isOk())
-                // the content can be tested with Json path
-                .andExpect(jsonPath("[*].name").value(containsInAnyOrder("heater 1", "heater 2")));
     }
 
     @Test
-    void shouldLoadAHeaterAndReturnNullIfNotFound() throws Exception {
-        given(heaterDao.findById(999L)).willReturn(Optional.empty());
-
-        mockMvc.perform(get("/api/heaters/999").accept(APPLICATION_JSON))
-                // check the HTTP response
-                .andExpect(status().isOk())
-                // the content can be tested with Json path
-                .andExpect(content().string(""));
+    void returnNullIfNotFound() throws Exception {
+        given(heaterDao.findById(69L)).willReturn(Optional.empty());
     }
 
     @Test
-    void shouldLoadAHeater() throws Exception {
-        given(heaterDao.findById(999L)).willReturn(Optional.of(createHeater("heater 1")));
+    void createHeater() throws Exception {
+        Heater heater = createHeater("heater 1");
 
-        mockMvc.perform(get("/api/heaters/999").accept(APPLICATION_JSON))
-                // check the HTTP response
-                .andExpect(status().isOk())
-                // the content can be tested with Json path
-                .andExpect(jsonPath("$.name").value("heater 1"));
+        given(roomDao.getReferenceById(anyLong())).willReturn(heater.getRoom());
+        given(heaterDao.save(any())).willReturn(heater);
     }
 
     @Test
-    void shouldUpdateHeater() throws Exception {
-        Heater expectedHeater = createHeater("heater 1");
-        expectedHeater.setId(1L);
-        String json = objectMapper.writeValueAsString(new HeaterDto(expectedHeater));
+    void updateHeater() throws Exception {
+        Heater heater = createHeater("heater 1");
+        heater.setId(1L);
 
-        given(roomDao.getReferenceById(anyLong())).willReturn(expectedHeater.getRoom());
-        given(heaterDao.getReferenceById(anyLong())).willReturn(expectedHeater);
-
-        mockMvc.perform(post("/api/heaters").content(json).contentType(APPLICATION_JSON_VALUE))
-                // check the HTTP response
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("heater 1"))
-                .andExpect(jsonPath("$.id").value("1"));
+        given(roomDao.getReferenceById(anyLong())).willReturn(heater.getRoom());
+        given(heaterDao.getReferenceById(anyLong())).willReturn(heater);
     }
 
     @Test
-    void shouldCreateHeater() throws Exception {
-        Heater expectedHeater = createHeater("heater 1");
-        expectedHeater.setId(null);
-        String json = objectMapper.writeValueAsString(new HeaterDto(expectedHeater));
+    void switchHeater() throws Exception {
+        Heater heater = createHeater("heater 1");
+        Assertions.assertThat(heater.getHeater_status()).isEqualTo(HeaterStatus.ON);
 
-        given(roomDao.getReferenceById(anyLong())).willReturn(expectedHeater.getRoom());
-        given(heaterDao.save(any())).willReturn(expectedHeater);
-
-        mockMvc.perform(post("/api/heaters").content(json).contentType(APPLICATION_JSON_VALUE))
-                // check the HTTP response
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("heater 1"));
-    }
-    @Test
-    void shouldSwitchHeater() throws Exception {
-        Heater expectedHeater = createHeater("heater 1");
-        Assertions.assertThat(expectedHeater.getHeater_status()).isEqualTo(HeaterStatus.ON);
-
-        given(heaterDao.findById(999L)).willReturn(Optional.of(expectedHeater));
-
-        mockMvc.perform(put("/api/heaters/999/switch").accept(APPLICATION_JSON))
-                // check the HTTP response
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("heater 1"))
-                .andExpect(jsonPath("$.heaterStatus").value("OFF"));
+        given(heaterDao.findById(69L)).willReturn(Optional.of(heater));
     }
 
-    @Test
-    void shouldDeleteHeater() throws Exception {
-        mockMvc.perform(delete("/api/heaters/999"))
-                .andExpect(status().isOk());
-    }
+
 
     private Heater createHeater(String name) {
-        Room room = new Room("S1", 1L, new Building());
-        return new Heater(name, 10L, room, HeaterStatus.ON);
+        Room room = new Room("room 1", 1L, 0, new Building());
+        return new Heater(name, 5L, room, HeaterStatus.ON);
     }
 }

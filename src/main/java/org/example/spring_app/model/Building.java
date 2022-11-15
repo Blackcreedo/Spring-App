@@ -35,7 +35,7 @@ public class Building {
         return this.name;
     }
 
-    public Set<Room> getRoom() {
+    public Set<Room> getRooms() {
         return this.rooms;
     }
 

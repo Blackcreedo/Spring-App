@@ -27,20 +27,22 @@ class HeaterDaoTest {
     private RoomDao roomDao;
 
     @Test
-    public void shouldFindAHeater() {
-        Heater heater = heaterDao.getReferenceById(-10L);
-        Assertions.assertThat(heater.getName()).isEqualTo("Heater1");
+    public void findHeater() {
+        Heater heater = heaterDao.getReferenceById(1L);
+        Assertions.assertThat(heater.getName()).isEqualTo("Heater 1");
         Assertions.assertThat(heater.getHeater_status()).isEqualTo(HeaterStatus.ON);
+        Assertions.assertThat(heater.getPower()).isEqualTo(2000);
     }
 
     @Test
-    public void souldDeletedHeaters(){
-        Room room = roomDao.getReferenceById(-10L);
+    public void deletedHeaters(){
+        Room room = roomDao.getReferenceById(1L);
         Set<Heater> heaters = room.getHeaters();
         List<Long> heaterIds = heaters.stream().map(h -> h.getId()).collect(Collectors.toList());
         Assertions.assertThat(heaterIds.size()).isEqualTo(2);
 
-        heaterDao.deleteByRoom(-10L);
+        heaterDao.deleteByRoom(1L);
+
         List<Heater> result = heaterDao.findAllById(heaterIds);
         Assertions.assertThat(result).isEmpty();
     }
